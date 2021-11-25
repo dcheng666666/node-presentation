@@ -57,6 +57,7 @@ bool ExecuteString(v8::Isolate* isolate, v8::Local<v8::String> source,
                    v8::Local<v8::Value> name, bool print_result,
                    bool report_exceptions);
 void Print(const v8::FunctionCallbackInfo<v8::Value>& args);
+void sayHello(const v8::FunctionCallbackInfo<v8::Value>& args);
 void Read(const v8::FunctionCallbackInfo<v8::Value>& args);
 void Load(const v8::FunctionCallbackInfo<v8::Value>& args);
 void Quit(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -122,9 +123,16 @@ v8::Local<v8::Context> CreateShellContext(v8::Isolate* isolate) {
   global->Set(isolate, "quit", v8::FunctionTemplate::New(isolate, Quit));
   // Bind the 'version' function
   global->Set(isolate, "version", v8::FunctionTemplate::New(isolate, Version));
+  global->Set(isolate, "sayHello", v8::FunctionTemplate::New(isolate, sayHello));
   return v8::Context::New(isolate, NULL, global);
 }
 
+void sayHello(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::String::Utf8Value str(args.GetIsolate(), args[0]);
+  const char* cstr = ToCString(str);
+  printf("hello, %s\n", cstr);
+  args.GetReturnValue().Set(10);
+}
 
 // The callback that is invoked by v8 whenever the JavaScript 'print'
 // function is called.  Prints its arguments on stdout separated by
